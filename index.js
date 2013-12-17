@@ -123,7 +123,7 @@ t.length = function () {
 t.width = function () {
   return this._columns.length
 }
-
+t.sort =
 t.sortBy = function (col) {
   col = col || 0
   this._rows.sort(function (a, b) {
