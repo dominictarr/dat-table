@@ -124,10 +124,13 @@ t.width = function () {
   return this._columns.length
 }
 t.sort =
-t.sortBy = function (col) {
+t.sortBy = function (col, comparator) {
+  if('function' === typeof col)
+    comparator = col, col = 0
   col = col || 0
   this._rows.sort(function (a, b) {
     var _a = a[col], _b = b[col]
+    if(comparator) return comparator(_a, _b)
     return _a == _b ? 0 : _a < _b ? -1 : 1
   })
   return this
