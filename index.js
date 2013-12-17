@@ -13,14 +13,14 @@ function isString (s) {
   return 'string' === typeof s
 }
 
-function isDecimal (e) {
-  return isNumber(e) ? (e % 1 !== 0) : false
-}
-
-function isExponent (e) {
-  return Math.abs(e) >= 1e21 || Math.abs(e) < 1e-6
-}
-
+//function isDecimal (e) {
+//  return isNumber(e) ? (e % 1 !== 0) : false
+//}
+//
+//function isExponent (e) {
+//  return Math.abs(e) >= 1e21 || Math.abs(e) < 1e-6
+//}
+//
 
 function parseUnits (header) {
   if(isObject(header)) return header
