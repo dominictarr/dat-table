@@ -1,7 +1,7 @@
 {
   "name": "dat-table",
   "description": "tables of data for dat.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/dominictarr/dat-table",
   "repository": {
     "type": "git",
