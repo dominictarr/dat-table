@@ -1,6 +1,6 @@
-# data-table
+# dat-table
 
-A datascructure for tables of data.
+A data structure for tables of data.
 
 a table of data, as in a CSV, with methods for operating on the data,
 as well as formatting as csv.
@@ -12,7 +12,7 @@ either arrays or with streams.
 ## example
 ``` js
 var fs = require('fs')
-var Table = require('data-table')
+var Table = require('dat-table')
 
 var table = Table.createTable(fs.readFileSync('data.csv', 'utf8'))
 

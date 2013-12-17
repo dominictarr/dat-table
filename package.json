@@ -1,11 +1,11 @@
 {
-  "name": "data-table",
-  "description": "tables of data",
+  "name": "dat-table",
+  "description": "tables of data for dat.",
   "version": "0.0.1",
-  "homepage": "https://github.com/dominictarr/data-table",
+  "homepage": "https://github.com/dominictarr/dat-table",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/data-table.git"
+    "url": "git://github.com/dominictarr/dat-table.git"
   },
   "devDependencies": {
     "tape": "~2.3.0"
