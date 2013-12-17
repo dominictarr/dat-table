@@ -1,7 +1,7 @@
 {
   "name": "data-table",
   "description": "tables of data",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/dominictarr/data-table",
   "repository": {
     "type": "git",
