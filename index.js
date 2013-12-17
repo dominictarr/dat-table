@@ -97,7 +97,7 @@ module.exports.createTable = function (data, opts) {
 t.column = function (n) {
   if(!this._headers[n])
     throw new Error('table does not have column:' + n)
-  return this._columns[n] || this._columns[n] = new Column(this, n)
+  return this._columns[n] = this._columns[n] || new Column(this, n)
 }
 
 t.reduce = function (col, reducer, initial) {
