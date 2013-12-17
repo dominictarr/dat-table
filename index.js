@@ -161,17 +161,20 @@ t.toString = function () {
   return format(this.toJSON())
 }
 
+
+var stats = require('./stats')
+
+for(var k in stats)
+  (function (k) {
+    t[k] = function (i) {
+      return this.reduce(i, stats[k])
+    }
+  })(k)
+
 //this does nothing currently...
 //but maybe it would be good to have something like this?
 //so that you can pass columns to functions?
 function Column (table, header, i) {
   this._table = table, this._header = header, this._i = i
-}
-
-var c = Column.prototype
-c.stats = function () {
-  return this._table.reduce(this._i, function (acc, item) {
-    return acc + item
-  }, 0)
 }
 
