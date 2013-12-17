@@ -62,9 +62,11 @@ module.exports = function (array) {
         fraction = str.length - whole
         total = str.length
       } else if(isDecimal(item)) {
-        whole = Math.round(item).toString().length
-        fraction = (item % 1).toString().length
-        total = item.toString().length
+        var string = item.toString()
+        whole = string.indexOf('.')
+        fraction = string.substring(whole).length
+        console.log(string, whole, fraction)
+        total = string.length
       } else {
         total = whole = item.toString().length
         fraction = 0
@@ -89,8 +91,6 @@ module.exports = function (array) {
       })
       return a
     }, [])
-
-  
 
   return array.map(function (e, i) {
     return e.map(function (e, i) {
