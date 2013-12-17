@@ -135,7 +135,7 @@ t.sortBy = function (col, comparator) {
   })
   return this
 }
-
+t.forEach =
 t.each = function (col, iter) {
   if('function' === typeof col)
     iter = col, col = null
@@ -170,6 +170,8 @@ var stats = require('./stats')
 for(var k in stats)
   (function (k) {
     t[k] = function (i) {
+      if(i == null)
+        return this.reduce(stats[k])
       return this.reduce(i, stats[k])
     }
   })(k)
