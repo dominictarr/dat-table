@@ -109,6 +109,12 @@ if `i` is not provided, each row is reduced, and then an array of values is retu
 iterate over the rows, or if `i` is provided,
 iterate over the values in the `i`th column.
 
+
+### Table#sort (i?, comparator?)
+
+Sort the table by the given column and comparator.
+If a column is not provided, will sort by the first column.
+
 ### Table#toJSON()
 
 convert to `json`.
