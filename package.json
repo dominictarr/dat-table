@@ -1,15 +1,14 @@
 {
   "name": "data-table",
-  "description": "",
+  "description": "tables of data",
   "version": "0.0.0",
   "homepage": "https://github.com/dominictarr/data-table",
   "repository": {
     "type": "git",
     "url": "git://github.com/dominictarr/data-table.git"
   },
-  "dependencies": {
-  },
   "devDependencies": {
+    "tape": "~2.3.0"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done"
