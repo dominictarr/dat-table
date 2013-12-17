@@ -122,10 +122,9 @@ tape('display numbers nicely', function (t) {
     + '+ big exponent ,  -1.94123e+21\n'
     + '- tiny exponent,   -1.2313e-41\n'
     + 'largish decimal,     12240.123\n'
-    + 'largish decimal,     12240.123\n'
-    + 'zero           ,         0'
-    + 'Infinity       , Infinity'
-    + '-Infinity      , -Infinity'
+    + 'zero           ,         0\n'
+    + 'Infinity       , Infinity\n'
+    + '-Infinity      , -Infinity\n'
     + 'not a number   , NaN'
 
   console.log(table.toCSV())
