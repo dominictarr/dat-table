@@ -60,7 +60,7 @@ This will be very useful for graphing.
 
 ## API
 
-### Table (headers)
+### Table (headers, opts)
 
 create a table with the given headers.
 headers must be an array of objects or strings.
@@ -80,6 +80,20 @@ var table = new Table([
 var table = new Table(['Time (S)', 'Length (m)', 'Weight (kg)'])
 //TODO: convert between different units.
 ```
+
+currently supported ops:
+```
+{
+  name: //name of the table (this is used in Table#join)
+}
+```
+
+### Table.createTable (data, opts)
+
+create a table instance from a string (it will be parsed as either JSON or CSV) or object.
+If it's a JS object, it will be interpreted as if it was parsed from JSON.
+
+createTable also supports the same options as `Table`
 
 ### Table#getRow(i)
 
@@ -114,6 +128,24 @@ iterate over the values in the `i`th column.
 
 Sort the table by the given column and comparator.
 If a column is not provided, will sort by the first column.
+
+### Table#find(i?, test)
+
+search through rows until `test(row, j, table)` returns true.
+if `i` is provided, then find will only search through a single column.
+
+### Table.join (a, b)
+
+(note, a static method on the constructor, not on the instance)
+
+combines `a` and `b` into one table, joining on the first column.
+this is an inner join, and any rows that are not joined will be dropped.
+each value must also be unique.
+
+### Table#filterCols (cols)
+
+return a new table with the just the specified columns.
+This function can be used to drop or reorder columns.
 
 ### Table#toJSON()
 
