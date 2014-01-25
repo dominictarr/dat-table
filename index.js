@@ -191,13 +191,57 @@ t.find = function (col, test) {
 }
 
 
+t.map = function (map) {
+  var t2 = Table(this.headers(), {name: this.name})
+  this.each(function (v, k, t) {
+    t2.addRow(map(v, k, t))
+  })
+  return t2
+}
+
+t.filter = function (test) {
+  var t2 = Table(this.headers(), {name: this.name})
+  this.each(function (v, k, t) {
+    if(test(v, k, t))
+      t2.addRow(v)
+  })
+  return t2
+}
+
+t.filterColumns = function (cols) {
+  if(!Array.isArray(cols))
+    throw new Error('filterColumns(cols) expects an array of column numbers')
+
+  var t = this.map(function (row) {
+    return cols.map(function (i) {
+      return row[i]
+    })
+  })
+  
+  t._headers = cols.map(function (i) {
+      return t._headers[i]
+    })
+  return t
+}
+
+t.unique = function (col) {
+  col = col || 0
+  var seen = {}
+  return this.filter(function (v) {
+    if(seen[v[col]]) return false
+    return seen[v[col]] = true
+  })
+}
+
 Table.join = function (a, b) {
+  if(!b) return a
   if(Array.isArray(a))
     return Table.join.apply(null, a)
   if(arguments.length > 2)
     return Table.join(a, Table.join.apply(null, [].slice.call(arguments, 1)))
 
-  a.sort(); b.sort()
+  //only need to unique() the first, because rows that don't match will be dropped.
+  a.unique().sort(); b.sort()
 
   function name(headers, name) {
     if(!name) return headers
@@ -219,7 +263,8 @@ Table.join = function (a, b) {
     var row2 = b.find(function (v) {
       if(v[0] == row[0]) return v
     })
-    t2.addRow(row.concat(row2.slice(1)))
+    if(row2)
+      t2.addRow(row.concat(row2.slice(1)))
   })
   return t2
 }
