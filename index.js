@@ -29,11 +29,14 @@ function parseUnits (header) {
   return {name: m[1].trim(), units: m[2]}
 }
 
-function Table (headers) {
+function Table (headers, opts) {
   if(!(this instanceof Table)) return new Table(headers)
   this._rows = []
   this._columns = []
   this._headers = headers.map(parseUnits)
+  opts = this._opts = opts || {}
+  if(opts.name)
+    this.name = opts.name
 
   var self = this
   this._headers.forEach(function (header, i) {
@@ -65,11 +68,17 @@ t.header = function (i) {
 
 }
 
+t.headers = t.header
+
 module.exports.createTable = function (data, opts) {
   //first row is headers, unless opts says otherwise (todo)
   //array of arrays
 
   //parse CSV. naive, does not handle quotes yet.
+
+  if(data[0] == '{' || data[0] == '[')
+    data = JSON.parse(data)
+
   if(isString(data))
     data = data
     .split('\n')
@@ -81,7 +90,7 @@ module.exports.createTable = function (data, opts) {
       })
     })
 
-  var t = new Table(data[0])
+  var t = new Table(data[0], opts)
 
   for(var i = 1; i < data.length; i++)
     t.addRow(data[i].map(function (e) {
@@ -135,6 +144,7 @@ t.sortBy = function (col, comparator) {
   })
   return this
 }
+
 t.forEach =
 t.each = function (col, iter) {
   if('function' === typeof col)
@@ -142,12 +152,14 @@ t.each = function (col, iter) {
   var l = this.length()
 
   if(col == null)
-    for(var i = 0; i < l; i++)
-      iter(this._rows[i], i, this)
+    for(var i = 0; i < l; i++) {
+      if(iter(this._rows[i], i, this) != null) return
+    }
   else
     for(var i = 0; i < l; i++)
-      if(this._rows[i].hasOwnProperty(col))
-        iter(this._rows[i][col], i, this)
+      if(this._rows[i].hasOwnProperty(col)) {
+        if(iter(this._rows[i][col], i, this) != null ) return
+      }
 }
 
 t.toJSON = function () {
@@ -162,6 +174,54 @@ t.toJSON = function () {
 t.toCSV =
 t.toString = function () {
   return format(this.toJSON())
+}
+
+t.find = function (col, test) {
+  var value = null
+  function each (v, k, o) {
+    value = test(v, k, o)
+    return value
+  }
+
+  if('function' == typeof col)
+    test = col, this.each(each)
+  else
+    test.each(col, test)
+  return value
+}
+
+
+Table.join = function (a, b) {
+  if(Array.isArray(a))
+    return Table.join.apply(null, a)
+  if(arguments.length > 2)
+    return Table.join(a, Table.join.apply(null, [].slice.call(arguments, 1)))
+
+  a.sort(); b.sort()
+
+  function name(headers, name) {
+    if(!name) return headers
+    return headers.map(function (v) {
+      return {
+        name: name + '.' + v.name,
+        units: v.units
+      }
+    })
+  }
+
+  var headers =
+    [a.headers(0)]
+    .concat(name(a.headers().slice(1), a.name))
+    .concat(name(b.headers().slice(1), b.name))
+
+  var t2 = Table(headers)
+  a.each(function (row) {
+    var row2 = b.find(function (v) {
+      if(v[0] == row[0]) return v
+    })
+    t2.addRow(row.concat(row2.slice(1)))
+  })
+  return t2
 }
 
 
