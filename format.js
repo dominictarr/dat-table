@@ -65,7 +65,6 @@ module.exports = function (array) {
         var string = item.toString()
         whole = string.indexOf('.')
         fraction = string.substring(whole).length
-        console.log(string, whole, fraction)
         total = string.length
       } else {
         total = whole = item.toString().length
