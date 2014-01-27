@@ -147,6 +147,11 @@ each value must also be unique.
 return a new table with the just the specified columns.
 This function can be used to drop or reorder columns.
 
+### Table#slice (start, end)
+
+return a new table with a subset of the rows of the previous table.
+just like [Array#slice]
+
 ### Table#toJSON()
 
 convert to `json`.
