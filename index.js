@@ -30,14 +30,14 @@ function parseUnits (header) {
 }
 
 function Table (headers, opts) {
-  if(!(this instanceof Table)) return new Table(headers)
+  if(!(this instanceof Table)) return new Table(headers, opts)
   this._rows = []
   this._columns = []
   this._headers = headers.map(parseUnits)
   opts = this._opts = opts || {}
   if(opts.name)
     this.name = opts.name
-
+  console.error(opts)
   var self = this
   this._headers.forEach(function (header, i) {
     self._columns[i] = new Column(self, i, header)
@@ -192,7 +192,9 @@ t.find = function (col, test) {
 
 
 t.map = function (map) {
-  var t2 = Table(this.headers(), {name: this.name})
+  console.error('map-', this._opts)
+  var t2 = Table(this.headers(), this._opts)
+  console.error()
   this.each(function (v, k, t) {
     t2.addRow(map(v, k, t))
   })
@@ -200,10 +202,20 @@ t.map = function (map) {
 }
 
 t.filter = function (test) {
-  var t2 = Table(this.headers(), {name: this.name})
+  var t2 = Table(this.headers(), this._opts)
   this.each(function (v, k, t) {
     if(test(v, k, t))
       t2.addRow(v)
+  })
+  return t2
+}
+
+t.slice = function () {
+  var t2 = Table(this.headers(), this._opts)
+  var rows = this.toJSON().slice(1)
+  rows = [].slice.apply(rows, arguments)
+  rows.forEach(function (row) {
+    t2.addRow(row)
   })
   return t2
 }
@@ -234,9 +246,9 @@ t.unique = function (col) {
 }
 
 Table.join = function (a, b) {
-  if(!b) return a
   if(Array.isArray(a))
     return Table.join.apply(null, a)
+  if(!b) return a
   if(arguments.length > 2)
     return Table.join(a, Table.join.apply(null, [].slice.call(arguments, 1)))
 
@@ -258,6 +270,8 @@ Table.join = function (a, b) {
     .concat(name(a.headers().slice(1), a.name))
     .concat(name(b.headers().slice(1), b.name))
 
+  console.error(headers, a.name, b.name)
+
   var t2 = Table(headers)
   a.each(function (row) {
     var row2 = b.find(function (v) {
@@ -268,7 +282,6 @@ Table.join = function (a, b) {
   })
   return t2
 }
-
 
 var stats = require('./stats')
 
