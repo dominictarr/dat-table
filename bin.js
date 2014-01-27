@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-var opts = require('minimist')(process.argv.slice(2), {string: ['filter']})
+var opts = require('minimist')(process.argv.slice(2))
 var path = require('path')
 var Table = require('./')
 var data = ''
@@ -8,12 +8,19 @@ var data = ''
 var json = opts.json
 var join = opts.join || opts.j
 var filter = opts.columns || opts.c
+var slice = opts.slice || opts.s
 
 if(filter) {
   if('string' !== typeof filter)
     error('--columns COLS\n'
         + '# COLS must be comma separated column numbers to keep. 0,1,4')
   filter = filter.split(/,\s*/).map(Number)
+}
+
+if(slice) {
+  if('string' !== typeof slice)
+    error('--slice START,LENGTH')
+  slice = slice.split(/,\s*/).map(Number)
 }
 
 function error (message) {
@@ -28,9 +35,11 @@ function dump(table) {
     console.log(''+table)
 }
 
-function applyFilter(table) {
-  if(!filter) return table
-  return table.filterColumns(filter)
+function mutate (table) {
+  console.error(slice, filter)
+  if(slice)  table = table.slice.apply(table, slice)
+  if(filter) table = table.filterColumns(filter)
+  return table
 }
 
 if(!process.stdin.isTTY) {
@@ -39,15 +48,17 @@ if(!process.stdin.isTTY) {
   process.stdin.on('data', function (d) { data += d })
   .on('end', function () {
     data = data.trim()
-    dump(applyFilter(Table.createTable(data)))
+    dump(mutate(Table.createTable(data)))
   })
 } else {
   var fs = require('fs')
-  var table = Table.join(opts._.map(function (name) {
-    return applyFilter(Table.createTable(
-      fs.readFileSync(name, 'utf8'),
-      {name: path.basename(name)}
-    ))
+
+  var table = Table.join(opts._.map(function (filename) {
+    var data = fs.readFileSync(filename, 'utf8')
+    var name = path.basename(filename).replace(/\.\w+$/,'')
+    return mutate(Table.createTable(data, {name: name}))
   }))
+
   dump(table)
 }
+
