@@ -37,7 +37,7 @@ function Table (headers, opts) {
   opts = this._opts = opts || {}
   if(opts.name)
     this.name = opts.name
-  console.error(opts)
+
   var self = this
   this._headers.forEach(function (header, i) {
     self._columns[i] = new Column(self, i, header)
@@ -86,6 +86,7 @@ module.exports.createTable = function (data, opts) {
     .map(function (e) {
       return e.split(',').map(function (e) {
         var value = e.trim()
+        if(value === '') return value
         return isNaN(value) ? value : parseFloat(value)
       })
     })
@@ -176,6 +177,16 @@ t.toString = function () {
   return format(this.toJSON())
 }
 
+t.toHTML = function () {
+  return "<table>\n" +
+  [this.headers().map(function (row) {
+    return "<th>" + row.name + "</th>"
+  }).join(' ')].concat(this._rows.map(function (row) {
+    return row.map(function (value) { return "<td>" + value + "</td>" }).join(' ')
+  })).map(function (html) { return "  <tr>" + html + "</tr>" })
+  .join('\n') + "\n</table>"
+}
+
 t.find = function (col, test) {
   var value = null
   function each (v, k, o) {
@@ -192,9 +203,7 @@ t.find = function (col, test) {
 
 
 t.map = function (map) {
-  console.error('map-', this._opts)
   var t2 = Table(this.headers(), this._opts)
-  console.error()
   this.each(function (v, k, t) {
     t2.addRow(map(v, k, t))
   })
@@ -269,8 +278,6 @@ Table.join = function (a, b) {
     [a.headers(0)]
     .concat(name(a.headers().slice(1), a.name))
     .concat(name(b.headers().slice(1), b.name))
-
-  console.error(headers, a.name, b.name)
 
   var t2 = Table(headers)
   a.each(function (row) {
