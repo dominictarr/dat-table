@@ -76,8 +76,29 @@ module.exports.createTable = function (data, opts) {
 
   //parse CSV. naive, does not handle quotes yet.
 
-  if(data[0] == '{' || data[0] == '[')
-    data = JSON.parse(data)
+  if(data[0] == '{' || data[0] == '[') {
+    try {
+      data = JSON.parse(data)
+    } catch (err) {
+      data = data.split('\n').map(JSON.parse)
+    }
+    if(Array.isArray(data)) {
+      var headers = []
+      data.forEach(function (row) {
+        for(var k in row)
+          if(!~headers.indexOf(k)) headers.push(k)
+      })
+      var t = new Table(headers)
+      data.forEach(function (e) {
+        t.addRow(headers.map(function (key) {
+          return e[key]
+        }))
+      })
+      return t
+    } else
+      throw new Error('json {} not supported')
+
+  }
 
   if(isString(data))
     data = data
