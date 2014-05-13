@@ -275,15 +275,24 @@ t.unique = function (col) {
   })
 }
 
-Table.join = function (a, b) {
-  if(Array.isArray(a))
-    return Table.join.apply(null, a)
-  if(!b) return a
-  if(arguments.length > 2)
-    return Table.join(a, Table.join.apply(null, [].slice.call(arguments, 1)))
+Table.join = function (tabs, cols) {
+  if(!cols)
+    cols = tabs.map(function (e) { return 0 })
+
+  if(tabs.length == 1) return tables[0]
+  if(tabs.length > 2)
+    return Table.join(
+      [tabs[0], Table.join(tabs.slice(1), cols.slice(1))],
+      [cols[0], 0]
+    )
 
   //only need to unique() the first, because rows that don't match will be dropped.
-  a.unique().sort(); b.sort()
+  tabs[0]
+    .sort(cols[0])
+    .unique(cols[0])
+
+  tabs[1]
+    .sort(cols[1])
 
   function name(headers, name) {
     if(!name) return headers
@@ -295,18 +304,32 @@ Table.join = function (a, b) {
     })
   }
 
-  var headers =
-    [a.headers(0)]
-    .concat(name(a.headers().slice(1), a.name))
-    .concat(name(b.headers().slice(1), b.name))
+  function merge(a, b, i, j) {
+    return [a[i]].concat(strip(a, i)).concat(strip(b, j))
+  }
+
+  function strip(array, index) {
+    array = array.slice()
+    array.splice(index, 1)
+    return array
+  }
+
+  var headers = merge(
+    name(tabs[0].headers(), tabs[0].name),
+    name(tabs[1].headers(), tabs[1].name),
+    cols[0], cols[1]
+  )
+
+  //don't give the shared column a special name.
+  headers[0].name = tabs[0].headers()[cols[0]].name
 
   var t2 = Table(headers)
-  a.each(function (row) {
-    var row2 = b.find(function (v) {
-      if(v[0] == row[0]) return v
+  tabs[0].each(function (row) {
+    var row2 = tabs[1].find(function (v) {
+      if(v[cols[1]] == row[cols[0]]) return v
     })
     if(row2)
-      t2.addRow(row.concat(row2.slice(1)))
+      t2.addRow(merge(row, row2, cols[0], cols[1]))
   })
   return t2
 }
