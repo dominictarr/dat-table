@@ -62,9 +62,39 @@ tape('test join', function (t) {
   var A = Table.createTable(a, {name: 'fibs'})
   var B = Table.createTable(b, {name: 'primes'})
   var C = Table.createTable(c, {name: 'squares'})
-  var actual = Table.join(A, B, C)
+  var actual = Table.join([A, B, C])
   console.log(actual.toCSV())
   t.deepEqual(actual.toJSON(), expected)
   t.end()
 })
 
+var expected2 =
+[ [ { name: 'value', units: 'int' },
+    { name: 'fibs.key', units: 'int' },
+    { name: 'primes.key', units: 'int' },
+    { name: 'squares.key', units: 'int' } ],
+  [ 1, 1, 2, 1 ],
+  [ 2, 1, 3, 4 ],
+  [ 3, 2, 5, 9 ],
+  [ 4, 3, 7, 16 ],
+  [ 5, 5, 11, 25 ],
+  [ 6, 8, 13, 36 ],
+  [ 7, 13, 17, 49 ] ]
+
+
+tape('join with columns specified', function (t) {
+  var A = Table.createTable(a, {name: 'fibs'})
+  var B = Table.createTable(b, {name: 'primes'})
+  var C = Table.createTable(c, {name: 'squares'})
+
+  var tables = [A, B, C].map(function (table) {
+    return table.map(function (row) {
+      return [row.pop(), row.shift()]
+    })
+  })
+  var actual = Table.join(tables, [1, 1, 1])
+  console.log(actual.toCSV())
+  t.deepEqual(actual.toJSON(), expected2)
+  t.end()
+
+})
