@@ -1,3 +1,4 @@
+'use strict'
 module.exports = Table
 var format = require('./format')
 
@@ -279,7 +280,7 @@ Table.join = function (tabs, cols) {
   if(!cols)
     cols = tabs.map(function (e) { return 0 })
 
-  if(tabs.length == 1) return tables[0]
+  if(tabs.length == 1) return tabs[0]
   if(tabs.length > 2)
     return Table.join(
       [tabs[0], Table.join(tabs.slice(1), cols.slice(1))],
