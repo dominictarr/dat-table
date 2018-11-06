@@ -30,9 +30,8 @@ function spaces (n) {
 }
 
 function pad (value, length) {
-  var string = value.toString()
+  var string = value == null ? '' : value.toString()
   var total = Math.max(length.total, length.fraction + length.whole)
-
   if(isNumber(value) && !isWeird(value)) {
     var whole
     if(isExponent(value)) {
@@ -48,6 +47,7 @@ function pad (value, length) {
 
 
 module.exports = function (array) {
+  console.log(array)
   function headerToString (e) {
     return e.name + (e.units ? ' (' + e.units + ')' : '')
   }
@@ -55,6 +55,7 @@ module.exports = function (array) {
   function reduceLengths (l, item) {
     if(!l) l = {whole: 0, total: 0, fraction: 0}
     var whole, fraction, total
+    item = item == null ? '' : item//convert undefined or null to empty string
     if(isNumber(item)) {
       if(isExponent(item)) {
         var str = item.toString()
@@ -74,7 +75,7 @@ module.exports = function (array) {
       total = item.toString().length
       fraction = whole = 0
     }
-    
+
     l.total = Math.max(l.total, total)
     l.whole = Math.max(l.whole, whole)
     l.fraction = Math.max(l.fraction, fraction)
@@ -96,5 +97,7 @@ module.exports = function (array) {
       return pad(e, lengths[i])
     }).join(', ').trimRight()
   }).join('\n')
-
 }
+
+
+
