@@ -47,11 +47,10 @@ function pad (value, length) {
 
 
 module.exports = function (array) {
-  console.log(array)
   function headerToString (e) {
     return e.name + (e.units ? ' (' + e.units + ')' : '')
   }
-  
+
   function reduceLengths (l, item) {
     if(!l) l = {whole: 0, total: 0, fraction: 0}
     var whole, fraction, total
@@ -98,6 +97,8 @@ module.exports = function (array) {
     }).join(', ').trimRight()
   }).join('\n')
 }
+
+
 
 
 
